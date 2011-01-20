@@ -1,0 +1,9 @@
+*~
+# Python-related files:
+*.pyc
+twod.egg-info*
+.coverage
+# Eclipse-related files:
+.pydevproject*
+.project
+.settings
