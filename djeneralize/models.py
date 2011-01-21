@@ -13,19 +13,20 @@
 # INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
-from collections import defaultdict
+import re
 
 from django.db.models.base import ModelBase, Model
 from django.db.models.fields import FieldDoesNotExist, TextField
-from django.db.models.manager import Manager
-from django.db.models.query import QuerySet
 from django.db.models import signals
 
-__all__ = [
-    'BaseGeneralizationMeta', 'BaseGeneralizationModel', 'SpecializedQuerySet',
-    'SpecializationManager',
-    ]
+from djeneralize import PATH_SEPERATOR
+from djeneralize.manager import SpecializationManager
+from djeneralize.utils import find_next_path_down
+
+__all__ = ['BaseGeneralizationMeta', 'BaseGeneralizationModel']
+
+SPECIALIZATION_RE = re.compile(r'^\w+$')
+
 
 # { Metaclass:
     
@@ -43,7 +44,7 @@ class BaseGeneralizationMeta(ModelBase):
             specialization = meta.__dict__.pop('specialization', None)
         else:
             specialization = None 
-        
+            
         new_model = super(BaseGeneralizationMeta, cls).__new__(
             cls, name, bases, attrs
             )
@@ -63,9 +64,7 @@ class BaseGeneralizationMeta(ModelBase):
             # Prepare the look-up mapping of specializations which the sub-
             # classes will update:
             new_model._meta.specializations = {}
-            
-            # Add the as_specialization method for the General model:
-            new_model.as_specialization = _get_as_specialization
+            new_model._meta.specialization = PATH_SEPERATOR
             
             if specialization is not None:
                 # We need to ensure this is actually None and not just evaluates
@@ -74,6 +73,7 @@ class BaseGeneralizationMeta(ModelBase):
                     "General models should not have a specialization declared "
                     "on their inner Meta class"
                     )
+                
         else:
             if specialization is None:
                 raise TypeError(
@@ -81,120 +81,35 @@ class BaseGeneralizationMeta(ModelBase):
                     "inner Meta class"
                     )
             
+            if not SPECIALIZATION_RE.match(specialization):
+                raise ValueError("Specializations must be alphanumeric string")
+            
+            parent_class = new_model.__base__
+
+            new_model._meta.specializations = {}
+            new_model._generalized_parent = parent_class
+            
+            path_specialization = '%s%s%s' % (
+                parent_class._meta.specialization, specialization,
+                PATH_SEPERATOR
+                )
+
+            # Calculate the specialization as a path taking into account the
+            # specialization of any ancestors:
+            new_model._meta.specialization = path_specialization
+            
             # Update the specializations mapping on the General model so that it
             # knows to use this class for that specialization:
-            parent_class = new_model.__base__
-            parent_class._meta.specializations[specialization] = new_model         
+            ancestor = getattr(new_model, '_generalized_parent', None)
+            while ancestor:
+                ancestor._meta.specializations[
+                    new_model._meta.specialization
+                    ] = new_model
+                ancestor = getattr(ancestor, '_generalized_parent', None)
             
-            # It might be useful to set this on the _meta of this class for
-            # book-keeping, although I can't think of a use at present as this
-            # should be stored on the actual model as _specialization:
-            new_model._meta.specialization = specialization
+            parent_class._meta.specializations[path_specialization] = new_model
         
         return new_model
-
-#}
-
-# { Customized queryset
-
-class SpecializedQuerySet(QuerySet):
-    """
-    A wrapper around QuerySet to ensure Specialized Models are returned.
-    
-    """
-    
-    def __iter__(self):
-        """
-        Override the iteration to ensure what's returned are Specialized Model
-        instances.
-        
-        """
-        
-        # Get the resource ids and types together:
-        specializations_by_id = self._clone().values_list(
-            'specialization_type', 'id'
-            )
-        
-        # Transform this into a dictionary of IDs by type:
-        ids_by_specialization = defaultdict(list)
-        
-        # and keep track of the IDs which respect the ordering specified in the
-        # queryset:
-        specialization_ids = []
-        
-        for specialization, id in specializations_by_id:
-            ids_by_specialization[specialization].append(id)
-            specialization_ids.append(id) 
-        
-        specialized_model_instances = {}
-        
-        # Add the sub-class instances into a single look-up 
-        for specialization, ids in ids_by_specialization.items():
-            sub_instances = self.model._meta.specialization[
-                specialization
-                ].objects.in_bulk(ids)
-            
-            specialized_model_instances.update(sub_instances)
-        
-        for resource_id in specialization_ids:
-            yield specialized_model_instances[resource_id]
-            
-    def get(self, *args, **kwargs):
-        """
-        Override get to ensure a specialized model instance is returned.
-        
-        :return: A specialized model instance
-        
-        """
-        
-        if 'specialization_type' in kwargs:
-            # if the specialization is explicitly specified, use this to work out
-            # which sub-class of the general model we'll use:
-            specialization = kwargs.pop('specialization_type')
-        else:
-            try:
-                specialization = super(SpecializedQuerySet, self)\
-                    .filter(*args, **kwargs).values_list(
-                        'specialization_type', flat=True
-                        )[0]
-            except IndexError:
-                raise self.model.DoesNotExist(
-                    "%s matching query does not exist." %
-                    self.model._meta.object_name
-                    )
-        
-        try:
-            return self.model._meta.specialization[specialization]\
-                                   .objects.get(*args, **kwargs)
-        except KeyError:
-            raise self.model.DoesNotExist("%s matching query does not exist." %
-                                          self.model._meta.object_name)
-            
-    # TODO: Override __getitem__
-    # TODO: Ensure that all annotations and extra fields are copied
-
-#}
-
-
-# { Manager:
-
-class SpecializationManager(Manager):
-    """
-    Customized manager to ensure that any QuerySet that is used always returns
-    specialized model instances rather than generalized model instances.
-    
-    """
-    
-    def get_query_set(self):
-        """
-        Instead of returning a QuerySet, use SpecializedQuerySet instead
-        
-        :return: A specialized queryset
-        :rtype: :class:`SpecializedQuerySet`
-        
-        """
-        
-        return SpecializedQuerySet(self.model)
 
 #}
 
@@ -209,8 +124,48 @@ class BaseGeneralizationModel(Model):
     specialization_type = TextField(db_index=True)
     """Field to store the specialization"""
     
+    def __init__(self, *args, **kwargs):
+        """
+        If specialization_type is not set in kwargs, add this is the most
+        specialized model, set specialization_type to match the specialization
+        declared in Meta
+        
+        """
+        
+        if ('specialization_type' not in kwargs and
+            not self._meta.specializations):
+            kwargs['specialization_type'] = self._meta.specialization
+            
+        super(BaseGeneralizationModel, self).__init__(*args, **kwargs)
+    
     class Meta:
         abstract = True
+        
+    def get_as_specialization(self, final_specialization=True):
+        """
+        Get the specialized model instance which corresponds to the general
+        case.
+        
+        :param final_specialization: Whether the specialization returned is
+            the most specialized specialization or whether the direct
+            specialization is used
+        :type final_specialization: :class:`bool`
+        :return: The specialized model corresponding to the current model
+        
+        """
+        
+        path = self.specialization_type
+        
+        if not final_specialization:
+            # We need to find the path which is only one-step down from the
+            # current level of specialization.
+            path = find_next_path_down(
+                self._meta.specialization, path, PATH_SEPERATOR
+                )
+    
+        return self._meta.specializations[path].objects.get(
+            pk=self.pk
+            )
 
 #}
 
@@ -230,7 +185,7 @@ def ensure_specialization_manager(sender, **kwargs):
     
     cls = sender
     
-    if not isinstance(cls, BaseGeneralizationModel):
+    if not issubclass(cls, BaseGeneralizationModel):
         return
     
     if cls._meta.abstract:
@@ -241,14 +196,15 @@ def ensure_specialization_manager(sender, **kwargs):
             cls._meta.get_field('specializations')
             raise ValueError(
                 "Model %s must specify a custom SpecializationManager, because "
-                "it has a field named 'objects'" % cls.__name__
+                "it has a field named 'specializations'" % cls.__name__
                 )
         except FieldDoesNotExist:
             pass
         cls.add_to_class('specializations', SpecializationManager())
         cls._base_specializations_manager = cls.specializations
     elif not getattr(cls, '_base_specializations_manager', None):
-        default_specialization_mgr = cls._default_specializations_manager.__class__
+        default_specialization_mgr = \
+            cls._default_specializations_manager.__class__
         if (default_specialization_mgr is SpecializationManager or
                 getattr(default_specialization_mgr, "use_for_related_fields", False)):
             cls._base_specializations_manager = cls._default_specialization_manager
@@ -267,21 +223,5 @@ def ensure_specialization_manager(sender, **kwargs):
                 )
 
 signals.class_prepared.connect(ensure_specialization_manager)
-
-#}
-
-# { Utility functions 
-
-def _get_as_specialization(self):
-    """
-    Get the specialized model instance which corresponds to the general case.
-    
-    :return: The specialized model corresponding to the current model
-    
-    """
-    
-    return self._meta.specializations[self.specialization_type].objects.get(
-        pk=self.pk
-        )
 
 #}
