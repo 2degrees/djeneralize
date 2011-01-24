@@ -137,6 +137,7 @@ class TestMetaclass(object):
         
         base_generalization_with_specialization_factory()
         
+        
 class TestFindNextPathDown(object):
     """Tests for find_next_path_down."""
     
@@ -155,6 +156,27 @@ class TestFindNextPathDown(object):
         full_path = '/home/barry/dev/'
         
         eq_(find_next_path_down(non_root, full_path, '/'), '/home/barry/')    
+
+
+class TestSetDefaultSpecialization(FixtureTestCase):
+    """Test for set_default_specialization on BaseGeneralizedModel"""
+    
+    datasets = [PenData, PencilData, FountainPenData, BallPointPenData]
+    
+    def test_match(self):
+        """
+        Ensure that set_default_specialization sets the correct specialziation
+        
+        """
+        wi = WritingImplement(specialization_type='foo')
+        wi.set_default_specialization()
+        
+        eq_(wi.specialization_type, '/')
+        
+        fp = FountainPen()
+        fp.set_default_specialization()
+        eq_(fp.specialization_type, '/pen/fountain_pen/')
+        
 
 
 class TestGetAsSpecialization(FixtureTestCase):

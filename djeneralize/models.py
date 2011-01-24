@@ -26,11 +26,13 @@ from djeneralize.utils import find_next_path_down
 __all__ = ['BaseGeneralizationMeta', 'BaseGeneralizationModel']
 
 SPECIALIZATION_RE = re.compile(r'^\w+$')
+"""Allowed characters in the specializations declaration in class Meta"""
 
 
 # { Metaclass:
     
 class BaseGeneralizationMeta(ModelBase):
+    """The metaclass for BaseGeneralizedModel"""
     
     def __new__(cls, name, bases, attrs):
         
@@ -108,6 +110,12 @@ class BaseGeneralizationMeta(ModelBase):
                 ancestor = getattr(ancestor, '_generalized_parent', None)
             
             parent_class._meta.specializations[path_specialization] = new_model
+            
+        # TODO: Reliably copy declared specializtion managers from super-classes
+        # to this class. This will require an alteration to the _meta Option
+        # class to hold information about concreate_specialized_managers and
+        # abstract_specialized managers and quite a lot of overriding of methods
+        # on the Manger class
         
         return new_model
 
@@ -131,12 +139,14 @@ class BaseGeneralizationModel(Model):
         declared in Meta
         
         """
+                    
+        super(BaseGeneralizationModel, self).__init__(*args, **kwargs)
         
+        # If we have a final specialization, and a specialization_type is not
+        # specified in kwargs, set it to the default for this model:
         if ('specialization_type' not in kwargs and
             not self._meta.specializations):
-            kwargs['specialization_type'] = self._meta.specialization
-            
-        super(BaseGeneralizationModel, self).__init__(*args, **kwargs)
+            self.set_default_specialization()
     
     class Meta:
         abstract = True
@@ -166,6 +176,15 @@ class BaseGeneralizationModel(Model):
         return self._meta.specializations[path].objects.get(
             pk=self.pk
             )
+    
+    def set_default_specialization(self):
+        """
+        Set the ``specialization_type`` of this instance to match that specified
+        by its specialization in the inner class Meta.
+        
+        """
+        
+        self.specialization_type = self._meta.specialization 
 
 #}
 

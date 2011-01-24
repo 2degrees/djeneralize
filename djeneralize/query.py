@@ -164,6 +164,8 @@ class SpecializedQuerySet(QuerySet):
         Customize the _clone method of QuerySet to ensure the value of
         _final_specialization is copied across to the clone correctly.
         
+        :rtype: :class:`SpecializedQuerySet`
+        
         """
         
         clone = super(SpecializedQuerySet, self)._clone(klass, setup, **kwargs)

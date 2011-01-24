@@ -14,7 +14,7 @@
 #
 ##############################################################################
 
-from os import path, stat
+from os import path
 
 def get_and_ensure_exists_path_to_db_file():
     """

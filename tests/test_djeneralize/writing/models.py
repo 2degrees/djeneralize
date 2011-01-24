@@ -16,7 +16,6 @@
 
 from django.db import models
 
-from djeneralize.manager import SpecializationManager
 from djeneralize.models import BaseGeneralizationModel
 
 __all__ = [

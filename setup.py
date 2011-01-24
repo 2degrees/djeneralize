@@ -42,7 +42,7 @@ setup(name="djeneralize",
       author_email="2degrees-floss@googlegroups.com",
       url="https://github.com/2degrees/djeneralize",
       license="BSD (http://dev.2degreesnetwork.com/p/2degrees-license.html)",
-      packages=find_packages(exclude=["tests"]),
+      packages=find_packages(),
       py_modules=[],
       zip_safe=False,
       tests_require = [
