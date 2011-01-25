@@ -9,3 +9,5 @@
 .settings
 # Documenation build directory:
 docs/build
+# The test database:
+tests/test_djeneralize/data.db

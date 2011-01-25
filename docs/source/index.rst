@@ -26,6 +26,7 @@ Contents
    defining_models
    querying
    api
+   todo
 
 Indices and tables
 ==================

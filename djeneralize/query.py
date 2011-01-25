@@ -79,9 +79,14 @@ class SpecializedQuerySet(QuerySet):
                     PATH_SEPERATOR
                     )
             
-            sub_instances = self.model._meta.specializations[
+            sub_queryset = self.model._meta.specializations[
                 specialization
-                ].objects.in_bulk(ids)
+                ].objects.all()
+                
+            # Copy any deferred loading over to the new querysets:
+            sub_queryset.query.deferred_loading = self.query.deferred_loading 
+            
+            sub_instances = sub_queryset.in_bulk(ids)
             
             specialized_model_instances.update(sub_instances)
         
