@@ -1,0 +1,7 @@
+include LICENCE
+include README
+include VERSION
+include MANIFEST.in
+
+recursive-exclude tests/ *
+recursive-exclude docs/ *

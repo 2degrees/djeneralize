@@ -3,6 +3,7 @@
 *.pyc
 *.egg-info*
 .coverage
+dist
 # Eclipse-related files:
 .pydevproject*
 .project
