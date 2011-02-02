@@ -21,7 +21,9 @@ from decimal import Decimal as D
 from fixture import DataSet
 
 
-__all__ = ['PenData', 'FountainPenData', 'BallPointPenData', 'PencilData']
+__all__ = [
+    'PenData', 'FountainPenData', 'BallPointPenData', 'PencilData'
+    ]
 
 
 class PenData(DataSet):

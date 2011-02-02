@@ -17,7 +17,7 @@ import re
 
 from django.db.models.base import ModelBase, Model
 from django.db.models.fields import FieldDoesNotExist, TextField
-from django.db.models import signals
+from django.dispatch import Signal
 
 from djeneralize import PATH_SEPERATOR
 from djeneralize.manager import SpecializationManager
@@ -28,6 +28,12 @@ __all__ = ['BaseGeneralizationMeta', 'BaseGeneralizationModel']
 SPECIALIZATION_RE = re.compile(r'^\w+$')
 """Allowed characters in the specializations declaration in class Meta"""
 
+# { Custom signal
+
+specialized_model_prepared = Signal()
+"""Signal to be emitted when a specialized model has been prepared"""
+
+#}
 
 # { Metaclass:
     
@@ -35,6 +41,8 @@ class BaseGeneralizationMeta(ModelBase):
     """The metaclass for BaseGeneralizedModel"""
     
     def __new__(cls, name, bases, attrs):
+        super_new = super(BaseGeneralizationMeta, cls).__new__
+        parents = [b for b in bases if isinstance(b, BaseGeneralizationMeta)]
         
         # Get the declared Meta inner class before the super-metaclass removes
         # it:
@@ -47,9 +55,17 @@ class BaseGeneralizationMeta(ModelBase):
         else:
             specialization = None 
             
-        new_model = super(BaseGeneralizationMeta, cls).__new__(
-            cls, name, bases, attrs
-            )
+        #if name == "Fruit": import pdb; pdb.set_trace()
+        new_model = super_new(cls, name, bases, attrs)
+        
+        # Ensure that the _meta attribute has some additional attributes:
+        if not hasattr(new_model._meta, 'abstract_specialization_managers'):
+            new_model._meta.abstract_specialization_managers = []
+        if not hasattr(new_model._meta, 'concrete_specialization_managers'):
+            new_model._meta.concrete_specialization_managers = []
+        
+        if not parents:
+            return new_model
         
         if new_model._meta.abstract:
             # This is an abstract base-class and no specializations should be
@@ -111,11 +127,42 @@ class BaseGeneralizationMeta(ModelBase):
             
             parent_class._meta.specializations[path_specialization] = new_model
             
-        # TODO: Reliably copy declared specializtion managers from super-classes
-        # to this class. This will require an alteration to the _meta Option
-        # class to hold information about concreate_specialized_managers and
-        # abstract_specialized managers and quite a lot of overriding of methods
-        # on the Manger class
+        is_proxy = new_model._meta.proxy
+        
+        if getattr(new_model, '_default_specialization_manager', None):
+            if not is_proxy:
+                new_model._default_specialization_manager = None
+                new_model._base_specialization_manager = None
+            else:
+                new_model._default_specialization_manager = \
+                    new_model._default_specialization_manager._copy_to_model(
+                        new_model
+                        )
+                new_model._base_specialization_manager = \
+                    new_model._base_specialization_manager._copy_to_model(
+                        new_model
+                        )
+                    
+        for obj_name, obj in attrs.items():
+            # We need to do this to ensure that a declared SpecializationManager
+            # will be correctly set-up:
+            if isinstance(obj, SpecializationManager):
+                new_model.add_to_class(obj_name, obj)
+        
+        for base in parents:
+            # Inherit managers from the abstract base classes.
+            new_model.copy_managers(
+                base._meta.abstract_specialization_managers
+                )
+
+            # Proxy models inherit the non-abstract managers from their base,
+            # unless they have redefined any of them.
+            if is_proxy:
+                new_model.copy_managers(
+                    base._meta.concrete_specialization_managers
+                    )
+        
+        specialized_model_prepared.send(sender=new_model)
         
         return new_model
 
@@ -196,19 +243,16 @@ def ensure_specialization_manager(sender, **kwargs):
     specialization manager and sets the ``_default_specialization_manager``
     attribute on the class.
     
-    :param sender: The class which emitted the class prepared signal which needs
-        to be checked for the specialization manager
-    :type sender: :class:`django.db.models.base.Model`
+    :param sender: The new specialized model
+    :type sender: :class:`BaseGeneralizationModel`
     
     """
     
     cls = sender
     
-    if not issubclass(cls, BaseGeneralizationModel):
-        return
-    
     if cls._meta.abstract:
         return
+    
     if not getattr(cls, '_default_specialization_manager', None):
         # Create the default specialization manager, if needed.
         try:
@@ -220,27 +264,31 @@ def ensure_specialization_manager(sender, **kwargs):
         except FieldDoesNotExist:
             pass
         cls.add_to_class('specializations', SpecializationManager())
-        cls._base_specializations_manager = cls.specializations
-    elif not getattr(cls, '_base_specializations_manager', None):
+        cls._base_specialization_manager = cls.specializations
+    elif not getattr(cls, '_base_specialization_manager', None):
         default_specialization_mgr = \
-            cls._default_specializations_manager.__class__
-        if (default_specialization_mgr is SpecializationManager or
-                getattr(default_specialization_mgr, "use_for_related_fields", False)):
-            cls._base_specializations_manager = cls._default_specialization_manager
+            cls._default_specialization_manager.__class__
+        if default_specialization_mgr is SpecializationManager or getattr(
+            default_specialization_mgr, "use_for_related_fields", False
+            ):
+            cls._base_specialization_manager = \
+                cls._default_specialization_manager
         else:
             # Default manager isn't a plain Manager class, or a suitable
             # replacement, so we walk up the base class hierarchy until we hit
             # something appropriate.
             for base_class in default_specialization_mgr.mro()[1:]:
-                if (base_class is SpecializationManager or
-                        getattr(base_class, "use_for_related_fields", False)):
-                    cls.add_to_class('_base_specializations_manager', base_class())
+                if base_class is SpecializationManager or getattr(
+                    base_class, "use_for_related_fields", False
+                    ):
+                    cls.add_to_class(
+                        '_base_specialization_manager', base_class()
+                        )
                     return
             raise AssertionError(
                 "Should never get here. Please report a bug, including your "
                 "model and model manager setup."
                 )
 
-signals.class_prepared.connect(ensure_specialization_manager)
-
+specialized_model_prepared.connect(ensure_specialization_manager)
 #}

@@ -165,7 +165,7 @@ class TestSetDefaultSpecialization(FixtureTestCase):
     
     def test_match(self):
         """
-        Ensure that set_default_specialization sets the correct specialziation
+        Ensure that set_default_specialization sets the correct specialization
         
         """
         wi = WritingImplement(specialization_type='foo')

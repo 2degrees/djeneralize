@@ -71,7 +71,7 @@ class TestSpecializedQuerySet(FixtureTestCase):
         
         self._check_attributes(all_objects, all_specializations)
     
-    def test_filer(self):
+    def test_filter(self):
         """Check the filter() method works correctly"""
         
         filtered_objects = WritingImplement.objects.filter(length__gte=10)\
