@@ -27,13 +27,3 @@ This seems like it should be working correctly, but there seems to be a
 deficiency here. I'm not sure whether there is a bug in Django with inherited
 tables as this doesn't seem to be working correctly on the ``objects`` queryset
 either.
-
-Copy managers correctly
-=======================
-
-At present any sub-classes of the
-:class:`~djeneralize.manager.SpecializationManager` added to a general case
-model will not be copied and re-instantiated on child models. There is a bit of
-extra work to do here as it's important to ensure that the ``_meta`` attribute
-of specialized models can cope with the extra fields of
-:attr:`_default_specialization_manager` and :attr:`_base_specialization_manager`.
