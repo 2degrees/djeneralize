@@ -19,6 +19,7 @@ import os
 # Ensure that Django knows where the project is:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_djeneralize.settings'
 
+from django.http import Http404
 from fixture.django_testcase import FixtureTestCase
 from nose.tools import (
     eq_, ok_, assert_false, raises, assert_raises, assert_not_equal
@@ -466,3 +467,89 @@ class TestSpecializedQueryset(FixtureTestCase):
         
         assert_not_equal(wi.__class__, WritingImplement)
         eq_(wi, Pen.objects.all()[0])
+        
+
+class TestGetSpecializationOr404(FixtureTestCase):
+    """Tests for get_specialization_or_404"""
+    
+    datasets = [PenData, PencilData, FountainPenData, BallPointPenData]
+    
+    def test_model_class_exists(self):
+        """
+        get_specialization_or_404 returns the specialized model instance if it
+        is called with a BaseSpecialized model class and parameters which
+        correspond to a DB entry. 
+        
+        """
+        
+        pencil = Pencil.objects.get(name=PencilData.Technical.name)
+        eq_(pencil, get_specialization_or_404(
+            WritingImplement, name=PencilData.Technical.name
+            ))
+        
+    def test_model_class_does_not_exist(self):
+        """
+        get_specialization_or_404 raises a Http404 error if it is called with a
+        BaseSpecialized model class and parameters which do not correspond to a
+        DB entry. 
+        
+        """
+        
+        assert_raises(
+            Http404, get_specialization_or_404, WritingImplement,
+            name='some thing else'
+            )
+        
+    def test_manager_exists(self):
+        """
+        get_specialization_or_404 returns the specialized model instance if it
+        is called with a SpecializedManager instance and parameters which
+        correspond to a DB entry. 
+        
+        """
+        
+        pencil = Pencil.objects.get(name=PencilData.Technical.name)
+        eq_(pencil, get_specialization_or_404(
+            WritingImplement.specializations, name=PencilData.Technical.name
+            ))
+        
+    def test_manager_does_not_exist(self):
+        """
+        get_specialization_or_404 raises a Http404 error if it is called with a
+        SpecializedManager instance and parameters which do not correspond to a
+        DB entry. 
+        
+        """
+        
+        assert_raises(
+            Http404, get_specialization_or_404, WritingImplement.specializations,
+            name='some thing else'
+            )
+        
+    def test_queryset_exists(self):
+        """
+        get_specialization_or_404 returns the specialized model instance if it
+        is called with a SpecializedQuerySet instance and parameters which
+        correspond to a DB entry. 
+        
+        """
+        
+        pencil = Pencil.objects.get(name=PencilData.Technical.name)
+        eq_(pencil, get_specialization_or_404(
+            WritingImplement.specializations.all(),
+            name=PencilData.Technical.name
+            ))
+        
+    def test_queryset_does_not_exist(self):
+        """
+        get_specialization_or_404 raises a Http404 error if it is called with a
+        SpecializedQuerySet instance and parameters which do not correspond to a
+        DB entry. 
+        
+        """
+        
+        assert_raises(
+            Http404, get_specialization_or_404,
+            WritingImplement.specializations.all(), name='some thing else'
+            )
+    

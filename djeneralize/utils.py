@@ -16,7 +16,9 @@
 
 """Utilities for djeneralize"""
 
-__all__ = ['find_next_path_down']
+from django.http import Http404
+
+__all__ = ['find_next_path_down', 'get_specialization_or_404']
 
 
 def find_next_path_down(current_path, path_to_reduce, separator):
@@ -46,3 +48,49 @@ def find_next_path_down(current_path, path_to_reduce, separator):
             path_to_reduce.split(separator, next_level)[:next_level]
             ), separator
         )
+    
+
+def _get_queryset(klass):
+    """
+    Returns a SpecializedQuerySet from a BaseGeneralizedModel sub-class,
+    SpecializationManager, or SpecializedQuerySet.
+    
+    """
+    
+    # Need to import here to stop circular import problems
+    # TODO: move this functionality to a separate module
+    from djeneralize.manager import SpecializationManager
+    from djeneralize.query import SpecializedQuerySet
+
+    
+    if isinstance(klass, SpecializedQuerySet):
+        return klass
+    elif isinstance(klass, SpecializationManager):
+        manager = klass
+    else:
+        manager = klass._default_specialization_manager
+    return manager.all()
+
+
+def get_specialization_or_404(klass, *args, **kwargs):
+    """
+    Uses get() to return an specializaed object, or raises a Http404 exception
+    if the object does not exist.
+
+    klass may be a BaseGeneralizedModel, SpecializationManager, or
+    SpecializedQuerySet object. All other passed arguments and keyword arguments
+    are used in the get() query.
+
+    .. note:: Like with get(), an MultipleObjectsReturned will be raised if more
+        than one object is found.
+        
+    """
+    queryset = _get_queryset(klass)
+    
+    try:
+        return queryset.get(*args, **kwargs)
+    except queryset.model.DoesNotExist:
+        raise Http404(
+            'No %s matches the given query.' % queryset.model._meta.object_name
+            )
+    
