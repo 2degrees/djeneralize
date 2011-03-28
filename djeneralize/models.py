@@ -231,7 +231,11 @@ class BaseGeneralizationModel(Model):
         
         """
         
-        self.specialization_type = self._meta.specialization 
+        self.specialization_type = self.__class__.get_default_specialization()
+    
+    @classmethod
+    def get_default_specialization(cls):
+        return cls._meta.specialization
 
 #}
 
