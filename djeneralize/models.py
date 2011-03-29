@@ -164,6 +164,8 @@ class BaseGeneralizationMeta(ModelBase):
         
         specialized_model_prepared.send(sender=new_model)
         
+        new_model.model_specialization = new_model._meta.specialization
+        
         return new_model
 
 #}
@@ -193,8 +195,8 @@ class BaseGeneralizationModel(Model):
         # specified in kwargs, set it to the default for this model:
         if ('specialization_type' not in kwargs and
             not self._meta.specializations):
-            self.set_default_specialization()
-    
+            self.specialization_type = self.__class__.model_specialization
+        
     class Meta:
         abstract = True
         
@@ -220,23 +222,8 @@ class BaseGeneralizationModel(Model):
                 self._meta.specialization, path, PATH_SEPERATOR
                 )
     
-        return self._meta.specializations[path].objects.get(
-            pk=self.pk
-            )
+        return self._meta.specializations[path].objects.get(pk=self.pk)
     
-    def set_default_specialization(self):
-        """
-        Set the ``specialization_type`` of this instance to match that specified
-        by its specialization in the inner class Meta.
-        
-        """
-        
-        self.specialization_type = self.__class__.get_default_specialization()
-    
-    @classmethod
-    def get_default_specialization(cls):
-        return cls._meta.specialization
-
 #}
 
 # { Signal handler 
