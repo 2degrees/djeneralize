@@ -51,10 +51,10 @@ class TestMetaclass(object):
         ok_(FountainPen in specializations_classes)
         ok_(BallPointPen in specializations_classes)
         
-        ok_(Pen._meta.specialization in specializations_keys)
-        ok_(Pencil._meta.specialization in specializations_keys)
-        ok_(FountainPen._meta.specialization in specializations_keys)
-        ok_(BallPointPen._meta.specialization in specializations_keys)
+        ok_(Pen.model_specialization in specializations_keys)
+        ok_(Pencil.model_specialization in specializations_keys)
+        ok_(FountainPen.model_specialization in specializations_keys)
+        ok_(BallPointPen.model_specialization in specializations_keys)
         
     
     def test_sub_specialization(self):
@@ -73,10 +73,10 @@ class TestMetaclass(object):
         ok_(FountainPen in specializations_classes)
         ok_(BallPointPen in specializations_classes)
         
-        assert_false(Pen._meta.specialization in specializations_keys)
-        assert_false(Pencil._meta.specialization in specializations_keys)
-        ok_(FountainPen._meta.specialization in specializations_keys)
-        ok_(BallPointPen._meta.specialization in specializations_keys)
+        assert_false(Pen.model_specialization in specializations_keys)
+        assert_false(Pencil.model_specialization in specializations_keys)
+        ok_(FountainPen.model_specialization in specializations_keys)
+        ok_(BallPointPen.model_specialization in specializations_keys)
         
         eq_(BallPointPen._meta.specializations, {})
         
@@ -87,11 +87,11 @@ class TestMetaclass(object):
         
         """
         
-        eq_(WritingImplement._meta.specialization, '/')
-        eq_(Pen._meta.specialization, '/pen/')
-        eq_(Pencil._meta.specialization, '/pencil/')
-        eq_(FountainPen._meta.specialization, '/pen/fountain_pen/')
-        eq_(BallPointPen._meta.specialization, '/pen/ballpoint_pen/')
+        eq_(WritingImplement.model_specialization, '/')
+        eq_(Pen.model_specialization, '/pen/')
+        eq_(Pencil.model_specialization, '/pencil/')
+        eq_(FountainPen.model_specialization, '/pen/fountain_pen/')
+        eq_(BallPointPen.model_specialization, '/pen/ballpoint_pen/')
         
     @raises(TypeError)
     def test_missing_meta(self):
@@ -157,6 +157,22 @@ class TestFindNextPathDown(object):
         full_path = '/home/barry/dev/'
         
         eq_(find_next_path_down(non_root, full_path, '/'), '/home/barry/')    
+
+
+class TestDefaultSpecialization(FixtureTestCase):
+    """
+    Test for automatic setting of the default specialization type at creation
+    time on BaseGeneralizedModel
+    
+    """
+    
+    def test_match(self):
+        """
+        Ensure that the default specialization type is set correctly
+        
+        """
+        pencil = FountainPen()
+        eq_(pencil.specialization_type, FountainPen.model_specialization)
 
 
 class TestGetAsSpecialization(FixtureTestCase):

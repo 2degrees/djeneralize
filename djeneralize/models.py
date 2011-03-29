@@ -218,9 +218,8 @@ class BaseGeneralizationModel(Model):
         if not final_specialization:
             # We need to find the path which is only one-step down from the
             # current level of specialization.
-            path = find_next_path_down(
-                self._meta.specialization, path, PATH_SEPERATOR
-                )
+            path = find_next_path_down(self.__class__.model_specialization,
+                                       path, PATH_SEPERATOR)
     
         return self._meta.specializations[path].objects.get(pk=self.pk)
     

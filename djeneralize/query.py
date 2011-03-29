@@ -75,7 +75,7 @@ class SpecializedQuerySet(QuerySet):
                 # Coerce the specialization to only be the direct child of the
                 # general model (self.model):
                 specialization = find_next_path_down(
-                    self.model._meta.specialization, specialization,
+                    self.model.model_specialization, specialization,
                     PATH_SEPERATOR
                     )
             
@@ -127,7 +127,7 @@ class SpecializedQuerySet(QuerySet):
             # Coerce the specialization to only be the direct child of the
             # general model (self.model):
             specialization = find_next_path_down(
-                self.model._meta.specialization, specialization, PATH_SEPERATOR
+                self.model.model_specialization, specialization, PATH_SEPERATOR
                 )
         
         try:
