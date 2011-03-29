@@ -159,24 +159,8 @@ class TestFindNextPathDown(object):
         eq_(find_next_path_down(non_root, full_path, '/'), '/home/barry/')    
 
 
-class TestDefaultSpecialization(FixtureTestCase):
-    """
-    Test for automatic setting of the default specialization type at creation
-    time on BaseGeneralizedModel
-    
-    """
-    
-    def test_match(self):
-        """
-        Ensure that the default specialization type is set correctly
-        
-        """
-        pencil = FountainPen()
-        eq_(pencil.specialization_type, FountainPen.model_specialization)
-
-
-class TestGetAsSpecialization(FixtureTestCase):
-    """Tests for the get_as_specialization method on general models"""
+class TestModelInstance(FixtureTestCase):
+    """Tests for model instances"""
     
     datasets = [PenData, PencilData, FountainPenData, BallPointPenData]
     
@@ -224,6 +208,16 @@ class TestGetAsSpecialization(FixtureTestCase):
         eq_(montblanc_intermediate.get_as_specialization(False),
             montblanc_special
             )
+    
+    def test_default_specialization_type(self):
+        """
+        Ensure that the default specialization type is correctly set at
+        creation time.
+        
+        """
+        pencil = FountainPen()
+        eq_(pencil.specialization_type, FountainPen.model_specialization)
+
         
 class TestSpecializedQueryset(FixtureTestCase):
     """
