@@ -81,9 +81,9 @@ specialized fields. However, ...
 What djeneralize does to extend Django's functionality
 ======================================================
 
-This specificity and generality are all well and good, but we we have a
-collection of writing implements, but want to consider exactly which sub-class
-of a writing implement these are, we don't get an assistance from Django::
+This specificity and generality are all well and good, but if we have a
+collection of writing implements and want to consider exactly to which sub-classes
+of WritingImplement they belong, then we don't get any assistance from Django::
 
 	>>> general_pen = Pen.objects.create(length=10, name='General pen', ink_colour='Black')
 	>>> fountain_pen = FountainPen.objects.create(length=15, name='Fountain pen', ink_colour='Blue', nib_width='1.2')  
@@ -98,13 +98,13 @@ of a writing implement these are, we don't get an assistance from Django::
 	
 These lists are all correct in terms of the model instances which are returned,
 but wouldn't it be great if we could query all our writing implements and get
-back a queryset which, when iterated over gave us a instances or the
+back a queryset which, when iterated over gave us instances of the
 specializations. With :mod:`djeneralize` this is a possibility::
 
 	>>> WritingImplement.specializations.all()
 	[<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
 	
-Additionallty, if we have a general case model instance, we can get its
+Additionally, if we have a general case model instance, we can get its
 specialization::
 
 	>>> wi = WritingImplement.objects.get(length=9)
