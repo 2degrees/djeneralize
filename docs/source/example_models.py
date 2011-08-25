@@ -13,7 +13,7 @@ class WritingImplement(BaseGeneralizationModel):
 
 #}
 
-#{ Direct children of WritingImplement, i.e. first specializtion 
+#{ Direct children of WritingImplement, i.e. first specialization 
 
 class Pencil(WritingImplement):
     
