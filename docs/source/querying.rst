@@ -58,7 +58,17 @@ model instances::
 .. note:: The :meth:`filter` can only take keyword arguments from the general
 	model and not from the specialized models as they are meaningless in the
 	general context.
-	
+
+extra()
+-------
+
+All the functionality in this method is honoured, but only the ``select``
+argument is copied over to the cloned
+:class:`~djeneralize.query.SpecializedQuerySet`::
+
+    >>> WritingImplement.specializations.extra(select={'description': 'SELECT "The " || name || " is " || length'}).values_list('description', flat=True)
+    [u'The Crayola is 5', u'The Bic is 3']
+
 get()
 -----
 
@@ -93,8 +103,8 @@ return the updated queryset::
 	>>> final
 	[<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
 	
-annotate(), raw() and extra()
------------------------------
+annotate() and raw()
+--------------------
 
 Unfortunately, due to the complexities of how the above work is performed on the
 underlying SQL query instance, it is not trivial to copy these annotations over

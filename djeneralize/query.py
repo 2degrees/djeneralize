@@ -86,6 +86,12 @@ class SpecializedQuerySet(QuerySet):
             # Copy any deferred loading over to the new querysets:
             sub_queryset.query.deferred_loading = self.query.deferred_loading 
             
+            # Copy any extra select statements to the new querysets. NB: It
+            # doesn't make sense to copy any of the "where", "tables" or
+            # "order_by" options as these have already been applied in the
+            # parent queryset
+            sub_queryset.query.extra = self.query.extra
+            
             sub_instances = sub_queryset.in_bulk(ids)
             
             specialized_model_instances.update(sub_instances)

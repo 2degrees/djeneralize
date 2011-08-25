@@ -17,8 +17,7 @@ over to the ``in_bulk`` call to generate the specializations. The way Django
 handles annotations is not trivial and quite a bit of time and effort will be
 needed to be invested to resolve this issue.
 
-Additionally any ``extra()`` and ``raw()`` calls should be supported where
-possible.
+Additionally any ``raw()`` calls should be supported where possible.
 
 Deferred loading of fields
 ==========================

@@ -25,7 +25,6 @@ from nose.tools import (
     eq_, ok_, assert_false, raises, assert_raises, assert_not_equal
     )
 
-from djeneralize.models import BaseGeneralizationModel
 from djeneralize.utils import *
 from .fixtures import *
 from .test_djeneralize.writing.models import *
@@ -417,8 +416,17 @@ class TestSpecializedQueryset(FixtureTestCase):
         
         assert_raises(
             NotImplementedError, WritingImplement.specializations.annotate
-            )    
+            )
+    
+    def test_extra(self):
+        """Queries added with .extra() are inherited in specializations."""
+        writing_implement = WritingImplement.specializations.extra(
+            select={'extra_field': 'SELECT 1'},
+            )[0]
         
+        ok_(hasattr(writing_implement, 'extra_field'))
+        eq_(writing_implement.extra_field, 1)
+    
     def test_ordering(self):
         """Ordering of the initial queryset is respected in the child objects"""
         
