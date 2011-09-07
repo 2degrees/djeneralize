@@ -51,10 +51,20 @@ class SpecializedQuerySet(QuerySet):
         
         """
         
-        # Get the resource ids and types together:
-        specializations_by_id = self._clone().values_list(
-            'specialization_type', 'id'
-            )
+        # Determine whether there are any extra fields which are also required
+        # to order the queryset. This is needed as Django's implementation of
+        # ValuesQuerySet cannot cope with fields being omitted which are used in
+        # the ordering and originating from an extra select
+        extra_fields = set(self.query.extra.keys())
+        ordering_fields = set(
+            field.lstrip('-') for field in self.query.order_by)
+        extra_ordering_fields = list(extra_fields & ordering_fields)
+        
+        values_query_fields = ['specialization_type', 'id'] + \
+            extra_ordering_fields
+        
+        # Get the resource ids and types together
+        specializations_data = self._clone().values(*values_query_fields)
         
         # Transform this into a dictionary of IDs by type:
         ids_by_specialization = defaultdict(list)
@@ -63,9 +73,12 @@ class SpecializedQuerySet(QuerySet):
         # queryset:
         specialization_ids = []
         
-        for specialization, id in specializations_by_id:
-            ids_by_specialization[specialization].append(id)
-            specialization_ids.append(id) 
+        for specialization_data in specializations_data:
+            specialization_type = specialization_data['specialization_type']
+            specialization_id = specialization_data['id']
+            
+            ids_by_specialization[specialization_type].append(specialization_id)
+            specialization_ids.append(specialization_id) 
         
         specialized_model_instances = {}
         

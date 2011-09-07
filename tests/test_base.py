@@ -465,6 +465,22 @@ class TestSpecializedQueryset(FixtureTestCase):
         assert_not_equal(wi.__class__, WritingImplement)
         eq_(wi, Pen.objects.all()[0])
         
+    def test_ordered_by_extra_field(self):
+        """
+        The ordering of a SpecializedQuerySet can be set by a field in an
+        "extra" statement.
+        
+        """
+        writing_implements = WritingImplement.specializations.extra(
+            select={'extra_field': 'SELECT 1'},
+            ).order_by('extra_field')
+        eq_(writing_implements[0].extra_field, 1)
+        
+        reversed_writing_implements = WritingImplement.specializations.extra(
+            select={'extra_field': 'SELECT 1'},
+            ).order_by('-extra_field')
+        
+        eq_(reversed_writing_implements[0].extra_field, 1)
 
 class TestGetSpecializationOr404(FixtureTestCase):
     """Tests for get_specialization_or_404"""
