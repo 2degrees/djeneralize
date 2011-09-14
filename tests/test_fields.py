@@ -19,15 +19,15 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_djeneralize.settings'
 from fixture.django_testcase import FixtureTestCase
 from nose.tools import eq_
 
-from tests.fixtures import BananaData, EcoProducerData, PenData
+from tests.fixtures import BananaData, EcoProducerData, PenData, ShopData
 from tests.test_djeneralize.fruit.models import Banana
-from tests.test_djeneralize.producers.models import EcoProducer
+from tests.test_djeneralize.producers.models import EcoProducer, Shop
 from tests.test_djeneralize.writing.models import WritingImplement
 
 
 class TestForeignKey(FixtureTestCase):
     
-    datasets = [EcoProducerData, BananaData, PenData]
+    datasets = [EcoProducerData, BananaData, PenData, ShopData]
     
     def test_specialized_foreign_key(self):
         """A SpecializedForeignKey field return the specialized counterpart"""
@@ -38,6 +38,7 @@ class TestForeignKey(FixtureTestCase):
     def test_specialized_related_manager(self):
         """
         The default specialization manager is used for related object lookups
+        
         """
         eco = EcoProducer.objects.get(name=EcoProducerData.BananaProducer.name)
         
@@ -45,3 +46,15 @@ class TestForeignKey(FixtureTestCase):
         related_object = banana.fruitproducer_set.all()[0]
 
         eq_(eco, related_object)
+    
+    def test_non_specialized_related_manager(self):
+        """
+        SpecializedForeignKey handles vanilla Django model sub-classes as well
+        
+        """
+        
+        eco = EcoProducer.objects.get(name=EcoProducerData.BananaProducer.name)
+        shop = Shop.objects.get(name=ShopData.EcoMart.name)
+        
+        related_object = eco.shops.all()[0]
+        eq_(shop, related_object)        

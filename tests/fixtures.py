@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2011, 2degrees Limited <egoddard@tech.2degreesnetwork.com>.
@@ -25,7 +24,7 @@ from fixture import DataSet
 
 __all__ = [
     'PenData', 'FountainPenData', 'BallPointPenData', 'PencilData',
-    'EcoProducerData',
+    'EcoProducerData', 'ShopData'
     ]
 
 
@@ -120,3 +119,14 @@ class EcoProducerData(DataSet):
         produce = BananaData.Banana
         pen = PenData.GeneralPen
         fertilizer = 'Love'
+
+
+class ShopData(DataSet):
+    
+    class Meta:
+        django_model = 'producers.Shop'
+    
+    class EcoMart:
+        name = 'EcoMart'
+        producer = EcoProducerData.BananaProducer
+    

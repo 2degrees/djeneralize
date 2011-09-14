@@ -50,6 +50,7 @@ class SpecializedForeignKey(models.ForeignKey):
         if self.rel.field_name is None:
             self.rel.field_name = cls._meta.pk.name
 
+
 #{ Field descriptors
 
 
@@ -86,10 +87,14 @@ class SpecializedForeignRelatedObjectsDescriptor(
         if instance is None:
             return self
 
-        return self.create_manager(
-            instance,
-            self.related.model._default_specialization_manager.__class__,
-            )
+        related_model = self.related.model
+        try:
+            default_manager = related_model._default_specialization_manager
+        except AttributeError:
+            # The related model is not a sub-class of BaseGeneralizedModel
+            default_manager = related_model._default_manager
+        
+        return self.create_manager(instance, default_manager.__class__)
 
 
 #}
