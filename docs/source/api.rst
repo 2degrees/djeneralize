@@ -15,6 +15,12 @@ djeneralize
 
 .. automodule:: djeneralize
 	:members:
+	
+fields
+======
+
+.. automodule:: djeneralize.fields
+    :members:
 
 manager
 =======

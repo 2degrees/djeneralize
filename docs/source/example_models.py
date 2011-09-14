@@ -1,19 +1,25 @@
 from django.db import models
 
 from djeneralize.models import BaseGeneralizationModel
+from djeneralize.fields import SpecializedForeignKey
+
 
 #{ General model
 
+
 class WritingImplement(BaseGeneralizationModel):
+    
     name = models.CharField(max_length=30)
     length = models.IntegerField()
+    holder = SpecializedForeignKey(
+        'WritingImplementHolder', null=True, blank=True)
     
     def __unicode__(self):
         return self.name
 
-#}
 
 #{ Direct children of WritingImplement, i.e. first specialization 
+
 
 class Pencil(WritingImplement):
     
@@ -21,7 +27,8 @@ class Pencil(WritingImplement):
     
     class Meta:
         specialization = 'pencil'
-        
+
+
 class Pen(WritingImplement):
     
     ink_colour = models.CharField(max_length=30)
@@ -29,9 +36,9 @@ class Pen(WritingImplement):
     class Meta:
         specialization = 'pen'
 
-#}
     
 #{ Grand-children of WritingImplement, i.e. second degree of specialization
+
 
 class FountainPen(Pen):
     
@@ -48,4 +55,35 @@ class BallPointPen(Pen):
     class Meta:
         specialization = 'ballpoint_pen'
  
+
+#{ Writing implement holders general model
+
+
+class WritingImplementHolder(BaseGeneralizationModel):
+    
+    name = models.CharField(max_length=30)
+
+    def __unicode__(self):
+        return self.name
+
+
+#{ Writing implement holders specializations
+
+
+class StationaryCupboard(WritingImplementHolder):
+    
+    volume = models.FloatField()
+
+    class Meta:
+        specialization = 'stationary_cupboard'
+
+
+class PencilCase(WritingImplementHolder):
+    
+    colour = models.CharField(max_length=30)
+    
+    class Meta:
+        specialization = 'pencil_case'
+
+
 #}

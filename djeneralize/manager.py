@@ -36,7 +36,7 @@ class SpecializationManager(Manager):
         Instead of returning a QuerySet, use SpecializedQuerySet instead
         
         :return: A specialized queryset
-        :rtype: :class:`SpecializedQuerySet`
+        :rtype: :class:`djeneralize.query.SpecializedQuerySet`
         
         """
 
@@ -48,7 +48,7 @@ class SpecializationManager(Manager):
         ensure only directly descended specializations are considered.
         
         :return: The cloned queryset
-        :rtype: :class:`SpecializedQuerySet`
+        :rtype: :class:`djeneralize.query.SpecializedQuerySet`
         
         """
         
@@ -60,7 +60,7 @@ class SpecializationManager(Manager):
         ensure only terminal specializations are considered.
         
         :return: The cloned queryset
-        :rtype: :class:`SpecializedQuerySet`
+        :rtype: :class:`djeneralize.query.SpecializedQuerySet`
         
         """
         

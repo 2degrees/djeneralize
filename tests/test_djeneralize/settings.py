@@ -124,4 +124,5 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'tests.test_djeneralize.writing',
     'tests.test_djeneralize.fruit',
+    'tests.test_djeneralize.producers',
 )

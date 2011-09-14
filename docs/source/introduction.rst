@@ -26,36 +26,56 @@ PostgreSQL backend):
 
 .. code-block:: sql
 
-	BEGIN;
-	CREATE TABLE "writing_writingimplement" (
-	    "id" integer NOT NULL PRIMARY KEY,
-	    "specialization_type" text NOT NULL,
-	    "name" varchar(30) NOT NULL,
-	    "length" integer NOT NULL
-	)
-	;
-	CREATE TABLE "writing_pencil" (
-	    "writingimplement_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_writingimplement" ("id"),
-	    "lead" varchar(2) NOT NULL
-	)
-	;
-	CREATE TABLE "writing_pen" (
-	    "writingimplement_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_writingimplement" ("id"),
-	    "ink_colour" varchar(30) NOT NULL
-	)
-	;
-	CREATE TABLE "writing_fountainpen" (
-	    "pen_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_pen" ("writingimplement_ptr_id"),
-	    "nib_width" decimal NOT NULL
-	)
-	;
-	CREATE TABLE "writing_ballpointpen" (
-	    "pen_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_pen" ("writingimplement_ptr_id"),
-	    "replaceable_insert" bool NOT NULL
-	)
-	;
-	CREATE INDEX "writing_writingimplement_524e029a" ON "writing_writingimplement" ("specialization_type");
-	COMMIT;
+    BEGIN;
+    CREATE TABLE "writing_writingimplement" (
+        "id" integer NOT NULL PRIMARY KEY,
+        "specialization_type" text NOT NULL,
+        "name" varchar(30) NOT NULL,
+        "length" integer NOT NULL,
+        "holder_id" integer
+    )
+    ;
+    CREATE TABLE "writing_pencil" (
+        "writingimplement_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_writingimplement" ("id"),
+        "lead" varchar(2) NOT NULL
+    )
+    ;
+    CREATE TABLE "writing_pen" (
+        "writingimplement_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_writingimplement" ("id"),
+        "ink_colour" varchar(30) NOT NULL
+    )
+    ;
+    CREATE TABLE "writing_fountainpen" (
+        "pen_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_pen" ("writingimplement_ptr_id"),
+        "nib_width" decimal NOT NULL
+    )
+    ;
+    CREATE TABLE "writing_ballpointpen" (
+        "pen_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_pen" ("writingimplement_ptr_id"),
+        "replaceable_insert" bool NOT NULL
+    )
+    ;
+    CREATE TABLE "writing_writingimplementholder" (
+        "id" integer NOT NULL PRIMARY KEY,
+        "specialization_type" text NOT NULL,
+        "name" varchar(30) NOT NULL
+    )
+    ;
+    CREATE TABLE "writing_stationarycupboard" (
+        "writingimplementholder_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_writingimplementholder" ("id"),
+        "volume" real NOT NULL
+    )
+    ;
+    CREATE TABLE "writing_pencilcase" (
+        "writingimplementholder_ptr_id" integer NOT NULL PRIMARY KEY REFERENCES "writing_writingimplementholder" ("id"),
+        "colour" varchar(30) NOT NULL
+    )
+    ;
+    CREATE INDEX "writing_writingimplement_524e029a" ON "writing_writingimplement" ("specialization_type");
+    CREATE INDEX "writing_writingimplement_1400a0f4" ON "writing_writingimplement" ("holder_id");
+    CREATE INDEX "writing_writingimplementholder_524e029a" ON "writing_writingimplementholder" ("specialization_type");
+    COMMIT;
+
 
 If we inspect the available fields on the general model (``WritingImplement``)
 and its sub-classes, we find that Django has set-up all the required fields
@@ -63,15 +83,15 @@ respecting the models' inheritance::
 
 	>>> from writing.models import *
 	>>> WritingImplement._meta.get_all_field_names()
-	['id', 'length', 'name', 'pen', 'pencil', 'specialization_type']
+	['holder', 'id', 'length', 'name', 'pen', 'pencil', 'specialization_type']
 	>>> Pen._meta.get_all_field_names()
-	['ballpointpen', 'fountainpen', 'id', 'ink_colour', 'length', 'name', 'specialization_type', 'writingimplement_ptr']
+	['ballpointpen', 'fountainpen', 'holder', 'id', 'ink_colour', 'length', 'name', 'specialization_type', 'writingimplement_ptr']
 	>>> Pencil._meta.get_all_field_names()
-	['id', 'lead', 'length', 'name', 'specialization_type', 'writingimplement_ptr']
+	['holder', 'id', 'lead', 'length', 'name', 'specialization_type', 'writingimplement_ptr']
 	>>> FountainPen._meta.get_all_field_names()
-	['id', 'ink_colour', 'length', 'name', 'nib_width', 'pen_ptr', 'specialization_type', 'writingimplement_ptr']
+	['holder', 'id', 'ink_colour', 'length', 'name', 'nib_width', 'pen_ptr', 'specialization_type', 'writingimplement_ptr']
 	>>> BallPointPen._meta.get_all_field_names()
-	['id', 'ink_colour', 'length', 'name', 'pen_ptr', 'replaceable_insert', 'specialization_type', 'writingimplement_ptr']
+	['holder', 'id', 'ink_colour', 'length', 'name', 'pen_ptr', 'replaceable_insert', 'specialization_type', 'writingimplement_ptr']
 	
 So far, so good. When we have the general case instances, we get just the general
 fields and when we're using specialized model instances, we have all the
@@ -112,6 +132,28 @@ specialization::
 	<WritingImplement: Ballpoint pen>
 	>>> wi.get_as_specialization()
 	<BallPointPen: Ballpoint pen>
+
+
+Foreign keys
+------------
+
+To make foreign keys return specializations, simply use the
+:class:`djeneralize.fields.SpecializedForeignKey` field in your model and then
+references will automatically return the specialization:: 
+
+    >>> from writing.models import *
+    >>> stationary_cupboard = StationaryCupboard.objects.create(name='Office cupboard', volume=1.2)
+    >>> pencil = Pencil.objects.create(length=12, name='Pencil', lead='HB', holder=stationary_cupboard)
+    >>> pencil.holder
+    <StationaryCupboard: Office cupboard>
+    
+Moreover, if the model from which the foreign key originates is a sub-class of
+:class:`djeneralize.models.BaseGeneralizationModel`, reverse relationships will
+also return the specializations::
+
+    >>> pencil.holder.writingimplement_set.all()
+    [<Pencil: Pencil>]
+    
 	
 That's about all there is to :mod:`djeneralize`. To make this all work, take a 
 look at :doc:`defining_models`.

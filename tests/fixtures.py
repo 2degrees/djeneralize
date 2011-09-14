@@ -13,6 +13,8 @@
 # INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from tests.test_djeneralize.producers.models import EcoProducer
+from tests.test_djeneralize.fruit.models import Banana
 
 """Fixtures for djeneralize tests"""
 
@@ -22,7 +24,8 @@ from fixture import DataSet
 
 
 __all__ = [
-    'PenData', 'FountainPenData', 'BallPointPenData', 'PencilData'
+    'PenData', 'FountainPenData', 'BallPointPenData', 'PencilData',
+    'EcoProducerData',
     ]
 
 
@@ -93,3 +96,27 @@ class PencilData(DataSet):
         name = 'Technical'
         length = 12
         lead = 'H5'
+
+
+class BananaData(DataSet):
+    
+    class Meta:
+        django_model = 'fruit.Banana'
+    
+    class Banana:
+        specialization_type = Banana.model_specialization
+        name = 'Banana from Canary Islands'
+        curvature = D('1.10')
+    
+
+class EcoProducerData(DataSet):
+    
+    class Meta:
+        django_model = 'producers.EcoProducer'
+    
+    class BananaProducer:
+        specialization_type = EcoProducer.model_specialization
+        name = 'Ecological Producer'
+        produce = BananaData.Banana
+        pen = PenData.GeneralPen
+        fertilizer = 'Love'
