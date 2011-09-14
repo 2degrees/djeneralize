@@ -55,7 +55,6 @@ class BaseGeneralizationMeta(ModelBase):
         else:
             specialization = None 
             
-        #if name == "Fruit": import pdb; pdb.set_trace()
         new_model = super_new(cls, name, bases, attrs)
         
         # Ensure that the _meta attribute has some additional attributes:
