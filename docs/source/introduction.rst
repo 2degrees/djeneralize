@@ -3,7 +3,7 @@ Introduction
 ============
 
 Django supports inherited model declarations through the sub-classing of model
-classes in python code. However, the use case for these inherited models is to
+classes in Python code. However, the use case for these inherited models is to
 only deal with the sub-classes themselves, and not to consider the role of
 sub-classes in the context of their super-class. The aim of :mod:`djeneralize`
 is to provide a way of mixing specializations of a general model case and work
@@ -22,7 +22,7 @@ What we get from Django
 
 Django handles the creation of the related tables for these models very nicely.
 If we execute ``python manage.py sqlall writing``, we get the following with a
-Postgres backend):
+PostgreSQL backend):
 
 .. code-block:: sql
 

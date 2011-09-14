@@ -6,7 +6,7 @@ Overview
 ========
 
 The aim of djeneralize is to enhance Django's model-inheritance and allow the
-user to declare specializtions of a general case model and then query the
+user to declare specializations of a general case model and then query the
 generalized model, but returns instances of the specialized model, e.g.::
 
 	>>> Fruit.objects.all()

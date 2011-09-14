@@ -139,7 +139,7 @@ As well as being able to retrieve specialized model instances directly from
 queries, it is possible to convert general model instances to their specialized
 form via the
 :meth:`djeneralize.models.BaseGeneralizedModel.get_as_specialization`. This
-takes one keyword arguement ``final_specialization`` which is ``True`` by default.
+takes one keyword argument ``final_specialization`` which is ``True`` by default.
 The concept of final and direct is mirrored from the `final() and direct()`_
 section above::
 

@@ -11,7 +11,7 @@ Terminology used in this documentation
 Worked example
 ==============
 
-Consider the following exmaple:
+Consider the following example:
 
 .. image:: images/inheritance.png
 

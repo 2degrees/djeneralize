@@ -1,5 +1,5 @@
 =====================================
-Defnining models with specializations
+Defining models with specializations
 =====================================
 
 .. topic:: Overview
@@ -18,7 +18,7 @@ Let us consider the models we defined in :doc:`introduction`:
 Derive your model from :class:`~djeneralize.models.BaseGeneralizationModel`
 ===========================================================================
 
-The top-level model is dervied from :class:`djeneralize.models.BaseGeneralizationModel`
+The top-level model is derived from :class:`djeneralize.models.BaseGeneralizationModel`
 and not :class:`django.db.models.Model`. Just make sure this class is
 imported at the top of the module and that's the inheritance done!
  
