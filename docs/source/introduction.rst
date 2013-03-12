@@ -147,13 +147,6 @@ references will automatically return the specialization::
     >>> pencil.holder
     <StationaryCupboard: Office cupboard>
     
-Moreover, if the model from which the foreign key originates is a sub-class of
-:class:`djeneralize.models.BaseGeneralizationModel`, reverse relationships will
-also return the specializations::
-
-    >>> pencil.holder.writingimplement_set.all()
-    [<Pencil: Pencil>]
-    
 	
 That's about all there is to :mod:`djeneralize`. To make this all work, take a 
 look at :doc:`defining_models`.

@@ -51,7 +51,7 @@ setup(name="djeneralize",
         "nose",
         ],
       install_requires=[
-        "Django >= 1.1",
+        "Django >= 1.1, <1.5",
         ],
       extras_require = {
         'nose': ["nose >= 0.11"],

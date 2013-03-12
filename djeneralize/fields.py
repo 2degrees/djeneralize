@@ -13,8 +13,7 @@
 #
 ##############################################################################
 from django.db import models
-from django.db.models.fields.related import (
-    ReverseSingleRelatedObjectDescriptor, ForeignRelatedObjectsDescriptor)
+from django.db.models.fields.related import ReverseSingleRelatedObjectDescriptor
 
 
 __all__ = ["SpecializedForeignKey"]
@@ -35,23 +34,8 @@ class SpecializedForeignKey(models.ForeignKey):
         descriptor = SpecializedReverseSingleRelatedObjectDescriptor(self)
         setattr(cls, self.name, descriptor)
 
-    def contribute_to_related_class(self, cls, related):
-        """
-        Ensure that specializations are return for related object lookups.
-        
-        Copied from Django's :class:`django.db.models.ForeignKey`.
-        
-        """
-        if not self.rel.is_hidden():
-            # Hidden FKs don't get a related descriptor
-            descriptor = SpecializedForeignRelatedObjectsDescriptor(related)
-            setattr(cls, related.get_accessor_name(), descriptor)
-        
-        if self.rel.field_name is None:
-            self.rel.field_name = cls._meta.pk.name
 
-
-#{ Field descriptors
+#{ Field descriptor
 
 
 class SpecializedReverseSingleRelatedObjectDescriptor(
@@ -73,28 +57,5 @@ class SpecializedReverseSingleRelatedObjectDescriptor(
             # In case the object is already the most specialized instance
             # KeyError is raised
             return related_object
-
-
-class SpecializedForeignRelatedObjectsDescriptor(
-    ForeignRelatedObjectsDescriptor):
-    """
-    Make the specialized related-object manager available as attribute on a
-    model class.
-    
-    """
-    
-    def __get__(self, instance, instance_type=None):
-        if instance is None:
-            return self
-
-        related_model = self.related.model
-        try:
-            default_manager = related_model._default_specialization_manager
-        except AttributeError:
-            # The related model is not a sub-class of BaseGeneralizedModel
-            default_manager = related_model._default_manager
-        
-        return self.create_manager(instance, default_manager.__class__)
-
 
 #}
