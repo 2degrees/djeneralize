@@ -10,7 +10,7 @@ Querying specialized models
 The specializations manager
 ===========================
 
-All models which dervie from :class:`~djeneralize.models.BaseGeneralizationModel`
+All models which derive from :class:`~djeneralize.models.BaseGeneralizationModel`
 have a manager ``specializations`` attached to them. This manager works in an
 analogous manner to the ``objects`` default manager for Django models, but
 instead of returning a :class:`~django.db.models.query.QuerySet`, it returns
@@ -90,7 +90,7 @@ available, the *final* and *direct* specialization. By default,
 :class:`~djeneralize.query.SpecializedQuerySet` uses the final specialization
 mode of operation. This can also be set by calling
 :meth:`~djeneralize.query.SpecializedQuerySet.final`. Conversely, if we want to
-swtich to returning direct specializations, we simply call
+switch to returning direct specializations, we simply call
 :meth:`~djeneralize.query.SpecializedQuerySet.direct`. Both of these method
 return the updated queryset::
 

@@ -37,9 +37,9 @@ This declaration should always be done in the inner ``class Meta`` declaration.
 These specializations are used by :mod:`djeneralize` to keep track of the
 relationships between the general case and the specializations. The model
 calculates a "path" for each specialization with the most general case being
-assigned the ``/`` path. This value is stored on the specialization_type field, so
-be careful when altering this field.
+assigned the ``/`` path. This value is stored on the specialization_type field,
+so be careful when altering this field.
 
 .. warning:: If the inheritance scheme changes for your models you will need to
-	create a database migration to ensure that the ``specialation_type`` field
+	create a database migration to ensure that the ``specialization_type`` field
 	is correctly mapped to the new structure of your inheritance.
