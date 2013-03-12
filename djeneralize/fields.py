@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2011, 2degrees Limited <egoddard@tech.2degreesnetwork.com>.
+# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
