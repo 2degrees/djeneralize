@@ -2,7 +2,7 @@
 Changelog for :mod:`djeneralize`
 ================================
 
-Version 2.0b
+Version 1.2b
 ===============
 
 - Added support for Django 1.4.
