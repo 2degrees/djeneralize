@@ -32,6 +32,12 @@ from djeneralize.utils import *
 from .fixtures import *
 from .test_djeneralize.writing.models import *
 
+def compare_generalization_to_specialization(generalization, specialization):
+    eq_(generalization.pk, specialization.pk)
+    eq_(generalization.name, specialization.name)
+    eq_(generalization.length, specialization.length)
+    assert_not_equal(generalization, specialization)
+
 
 class TestManager(FixtureTestCase):
     datasets = [PenData, PencilData, FountainPenData, BallPointPenData]
@@ -51,21 +57,23 @@ class TestSpecializedQuerySet(FixtureTestCase):
             normal_objects, specialized_objects
             ):
             
-            eq_(normal_object.pk, specialized_object.pk)
-            eq_(normal_object.name, specialized_object.name)
-            eq_(normal_object.length, specialized_object.length)
             eq_(normal_object.__class__, WritingImplement)
             assert_not_equal(specialized_object.__class__, WritingImplement)
+
+            compare_generalization_to_specialization(
+                normal_object,
+                specialized_object
+                )
+
             ok_(isinstance(specialized_object, WritingImplement))
-            assert_not_equal(normal_object, specialized_object)
         
     
     def test_all(self):
         """Check the all() method works correctly"""
         
-        all_objects = WritingImplement.objects.all()
+        all_objects = WritingImplement.objects.order_by('name')
         
-        all_specializations = WritingImplement.specializations.all()
+        all_specializations = WritingImplement.specializations.order_by('name')
         
         eq_(len(all_objects), len(all_specializations))
         
@@ -100,8 +108,8 @@ class TestSpecializedQuerySet(FixtureTestCase):
     def test_slice_index(self):
         """Check that querysets can be sliced by a single index value correctly"""
         
-        all_objects = WritingImplement.objects.all()
-        all_specializations = WritingImplement.specializations.all()
+        all_objects = WritingImplement.objects.order_by('name')
+        all_specializations = WritingImplement.specializations.order_by('name')
         
         eq_(len(all_objects), len(all_specializations))
         
@@ -109,17 +117,14 @@ class TestSpecializedQuerySet(FixtureTestCase):
             o = all_objects[i]
             s = all_specializations[i]
             
-            eq_(o.pk, s.pk)
-            eq_(o.name, s.name)
-            eq_(o.length, s.length)
-            assert_not_equal(o, s)
+            compare_generalization_to_specialization(o, s)
     
     def test_slice_range(self):
         """Test various range slices for compatibility"""
         
         # Two numbers:
-        sliced_objects = WritingImplement.objects.all()[1:4]
-        sliced_specializations = WritingImplement.specializations.all()[1:4]
+        sliced_objects = WritingImplement.objects.order_by('name')[1:4]
+        sliced_specializations = WritingImplement.specializations.order_by('name')[1:4]
         
         self._check_attributes(sliced_objects, sliced_specializations)
         
@@ -277,3 +282,4 @@ class TestSpecializedQuerySet(FixtureTestCase):
             )
         
         self._check_attributes(normal_objects, specialized_objects)
+

@@ -47,11 +47,11 @@ setup(name="djeneralize",
       zip_safe=False,
       tests_require = [
         "coverage",
-        "fixture",
+        "fixture>=1.5",
         "nose",
         ],
       install_requires=[
-        "Django >= 1.1, <1.5",
+        "Django >= 1.1, <1.6",
         ],
       extras_require = {
         'nose': ["nose >= 0.11"],
