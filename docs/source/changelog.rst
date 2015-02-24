@@ -2,8 +2,14 @@
 Changelog for :mod:`djeneralize`
 ================================
 
-Version 1.2b
-===============
+Version 1.2 Release Candidate 1
+===============================
+
+- Added support for Django 1.5.
+
+
+Version 1.2 Beta 1
+==================
 
 - Added support for Django 1.4.
 - Dropped specialization of objects returned by reverse relationships
