@@ -13,9 +13,9 @@
 #
 ##############################################################################
 
+from setuptools import setup, find_packages
 import os
 
-from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, "README")).read()
@@ -45,15 +45,15 @@ setup(name="djeneralize",
       packages=find_packages(),
       py_modules=[],
       zip_safe=False,
-      tests_require = [
+      tests_require=[
         "coverage",
         "fixture>=1.5",
         "nose",
         ],
       install_requires=[
-        "Django >= 1.1, <1.6",
+        "Django >= 1.6, <1.7",
         ],
-      extras_require = {
+      extras_require={
         'nose': ["nose >= 0.11"],
         },
       test_suite="nose.collector",

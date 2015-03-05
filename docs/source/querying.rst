@@ -4,9 +4,9 @@ Querying specialized models
 
 .. topic:: Overview
 
-	:mod:`djeneralize` allows all the standard Django queries to return
-	specialized models instead of the generalized models.
-	
+    :mod:`djeneralize` allows all the standard Django queries to return
+    specialized models instead of the generalized models.
+    
 The specializations manager
 ===========================
 
@@ -32,32 +32,32 @@ The :meth:`all` behaves the same that of a normal queryset, i.e. *all* objects
 in the database are returned, expect that they are as their specialized model 
 instances::
 
-	>>> qs = WritingImplement.specializations.all()
-	>>> type(qs)
-	<class 'djeneralize.query.SpecializedQuerySet'>
-	>>> qs
-	[<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
-	
+    >>> qs = WritingImplement.specializations.all()
+    >>> type(qs)
+    <class 'djeneralize.query.SpecializedQuerySet'>
+    >>> qs
+    [<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
+    
 filter()
 --------
 
 Filter allows filtering of data and can be chained, outputting the specialized
 model instances::
 
-	>>> qs1 = WritingImplement.specializations.filter(length__gte=10)
-	>>> type(qs1)
-	<class 'djeneralize.query.SpecializedQuerySet'>
-	>>> qs1
-	[<FountainPen: Fountain pen>, <Pen: General pen>, <Pencil: Pencil>]
-	>>> qs2 = qs1.filter(name__endswith='pen')
-	>>> type(qs2)
-	<class 'djeneralize.query.SpecializedQuerySet'>
-	>>> qs2
-	[<FountainPen: Fountain pen>, <Pen: General pen>]
+    >>> qs1 = WritingImplement.specializations.filter(length__gte=10)
+    >>> type(qs1)
+    <class 'djeneralize.query.SpecializedQuerySet'>
+    >>> qs1
+    [<FountainPen: Fountain pen>, <Pen: General pen>, <Pencil: Pencil>]
+    >>> qs2 = qs1.filter(name__endswith='pen')
+    >>> type(qs2)
+    <class 'djeneralize.query.SpecializedQuerySet'>
+    >>> qs2
+    [<FountainPen: Fountain pen>, <Pen: General pen>]
 
 .. note:: The :meth:`filter` can only take keyword arguments from the general
-	model and not from the specialized models as they are meaningless in the
-	general context.
+    model and not from the specialized models as they are meaningless in the
+    general context.
 
 extra()
 -------
@@ -74,13 +74,13 @@ get()
 
 Get allows a single specialized model instance to be retrieved from the database::
 
-	>>> WritingImplement.specializations.get(length=9)
-	<BallPointPen: Ballpoint pen>
-	
+    >>> WritingImplement.specializations.get(length=9)
+    <BallPointPen: Ballpoint pen>
+    
 .. note:: This query needs to perform two hits on the database. Firstly to
-	ascertain exact specialization to use and secondly to get the specialized
-	model instance.	However, if you pass ``specialization_type`` into the lookup
-	this will bypass the first-lookup.
+    ascertain exact specialization to use and secondly to get the specialized
+    model instance.    However, if you pass ``specialization_type`` into the lookup
+    this will bypass the first-lookup.
 
 final() and direct()
 --------------------
@@ -94,15 +94,15 @@ switch to returning direct specializations, we simply call
 :meth:`~djeneralize.query.SpecializedQuerySet.direct`. Both of these method
 return the updated queryset::
 
-	>>> WritingImplement.specializations.all() # by default, we get final
-	[<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
-	>>> direct = WritingImplement.specializations.direct()
-	>>> direct
-	[<Pen: Fountain pen>, <Pen: General pen>, <Pen: Ballpoint pen>, <Pencil: Pencil>]
-	>>> final = direct.final()
-	>>> final
-	[<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
-	
+    >>> WritingImplement.specializations.all() # by default, we get final
+    [<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
+    >>> direct = WritingImplement.specializations.direct()
+    >>> direct
+    [<Pen: Fountain pen>, <Pen: General pen>, <Pen: Ballpoint pen>, <Pencil: Pencil>]
+    >>> final = direct.final()
+    >>> final
+    [<FountainPen: Fountain pen>, <Pen: General pen>, <BallPointPen: Ballpoint pen>, <Pencil: Pencil>]
+    
 annotate() and raw()
 --------------------
 
@@ -114,15 +114,15 @@ release. It is hoped that the necessary work can be carried out in the future.
 For the moment, ``NotImplementedError`` is raised when trying to access annotate
 as otherwise misleading result could arise::
 
-	>>> WritingImplement.specializations.annotate()
-	------------------------------------------------------------
-	Traceback (most recent call last):
-	  File "<ipython console>", line 1, in <module>
-	  File "/home/euan/.virtualenvs/djeneralize/lib/python2.6/site-packages/Django-1.2.4-py2.6.egg/django/db/models/manager.py", line 147, in annotate
-	    return self.get_query_set().annotate(*args, **kwargs)
-	  File "/home/euan/dev/git/djeneralize/djeneralize/query.py", line 94, in annotate
-	    " to the specialized instances" % self.__class__.__name__
-	NotImplementedError: SpecializedQuerySet does not support annotations as these cannot be reliably copied to the specialized instances
+    >>> WritingImplement.specializations.annotate()
+    ------------------------------------------------------------
+    Traceback (most recent call last):
+      File "<ipython console>", line 1, in <module>
+      File "/home/franciscoruiz/.twod/pythons/2.7.8/buildout-eggs/Django-1.6.10-py2.7.egg/django/db/models/manager.py", line 169, in annotate
+        return self.get_queryset().annotate(*args, **kwargs)
+      File "/home/franciscoruiz/Dev/djeneralize/djeneralize/query.py", line 118, in annotate
+        " to the specialized instances" % self.__class__.__name__
+    NotImplementedError: SpecializedQuerySet does not support annotations as these cannot be reliably copied to the specialized instances
 
 and the rest...
 ---------------
@@ -143,11 +143,10 @@ takes one keyword argument ``final_specialization`` which is ``True`` by default
 The concept of final and direct is mirrored from the `final() and direct()`_
 section above::
 
-	>>> wi = WritingImplement.objects.get(name='Fountain pen')
-	>>> wi.get_as_specialization() # gets the final specialization by default
-	<FountainPen: Fountain pen>
-	>>> wi.get_as_specialization(final_specialization=False)
-	<Pen: Fountain pen>
-	>>> wi.get_as_specialization(final_specialization=True)
-	<FountainPen: Fountain pen>
-	
+    >>> wi = WritingImplement.objects.get(name='Fountain pen')
+    >>> wi.get_as_specialization() # gets the final specialization by default
+    <FountainPen: Fountain pen>
+    >>> wi.get_as_specialization(final_specialization=False)
+    <Pen: Fountain pen>
+    >>> wi.get_as_specialization(final_specialization=True)
+    <FountainPen: Fountain pen>

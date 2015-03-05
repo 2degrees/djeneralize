@@ -31,7 +31,7 @@ class SpecializationManager(Manager):
     
     """ 
     
-    def get_query_set(self):
+    def get_queryset(self):
         """
         Instead of returning a QuerySet, use SpecializedQuerySet instead
         
@@ -52,7 +52,7 @@ class SpecializationManager(Manager):
         
         """
         
-        return self.get_query_set().direct()
+        return self.get_queryset().direct()
     
     def final(self):
         """
@@ -64,7 +64,7 @@ class SpecializationManager(Manager):
         
         """
         
-        return self.get_query_set().final()
+        return self.get_queryset().final()
     
     def contribute_to_class(self, model, name):
         """

@@ -10,8 +10,8 @@ __all__ = [
 class FruitManager(models.Manager):
     """By default we don't want to return any rotten fruit"""
     
-    def get_query_set(self):
-        return super(FruitManager, self).get_query_set().filter(rotten=False)
+    def get_queryset(self):
+        return super(FruitManager, self).get_queryset().filter(rotten=False)
     
 class SpecializedFruitManager(SpecializationManager):
     """
@@ -20,8 +20,8 @@ class SpecializedFruitManager(SpecializationManager):
     
     """
     
-    def get_query_set(self):
-        return super(SpecializedFruitManager, self).get_query_set().filter(
+    def get_queryset(self):
+        return super(SpecializedFruitManager, self).get_queryset().filter(
             rotten=False
             )
 

@@ -2,6 +2,11 @@
 Changelog for :mod:`djeneralize`
 ================================
 
+Version 1.3 Release Candidate 1
+===============================
+
+- Added support for Django 1.6.
+
 Version 1.2 Release Candidate 1
 ===============================
 
