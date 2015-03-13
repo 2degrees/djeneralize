@@ -29,29 +29,29 @@ __all__ = [
 
 
 class PenData(DataSet):
-    
+
     class Meta:
         django_model = 'writing.Pen'
-    
+
     class GeneralPen:
         specialization_type = '/pen/'
         name = 'General pen'
         length = 15
         ink_colour = 'Blue'
-        
+
 
 class FountainPenData(DataSet):
-    
+
     class Meta:
         django_model = 'writing.FountainPen'
-    
+
     class MontBlanc:
         specialization_type = '/pen/fountain_pen/'
         name = 'Mont Blanc'
         length = 18
         ink_colour = 'Black'
         nib_width = D('1.25')
-        
+
     class Parker:
         specialization_type = '/pen/fountain_pen/'
         name = 'Parker'
@@ -60,36 +60,36 @@ class FountainPenData(DataSet):
         nib_width = D('0.75')
 
 class BallPointPenData(DataSet):
-    
+
     class Meta:
         django_model = 'writing.BallPointPen'
-    
+
     class Bic:
         specialization_type = '/pen/ballpoint_pen/'
         name = 'Bic'
         length = 12
         ink_colour = 'Blue'
         replaceable_insert = False
-        
+
     class Papermate:
         specialization_type = '/pen/ballpoint_pen/'
         name = 'Papermate'
         length = 13
         ink_colour = 'Green'
         replaceable_insert = True
-        
-        
+
+
 class PencilData(DataSet):
-    
+
     class Meta:
         django_model = 'writing.Pencil'
-    
+
     class Crayola:
         specialization_type = '/pencil/'
         name = 'Crayola'
         length = 8
         lead = 'B2'
-        
+
     class Technical:
         specialization_type = '/pencil/'
         name = 'Technical'
@@ -98,21 +98,21 @@ class PencilData(DataSet):
 
 
 class BananaData(DataSet):
-    
+
     class Meta:
         django_model = 'fruit.Banana'
-    
+
     class Banana:
         specialization_type = Banana.model_specialization
         name = 'Banana from Canary Islands'
         curvature = D('1.10')
-    
+
 
 class EcoProducerData(DataSet):
-    
+
     class Meta:
         django_model = 'producers.EcoProducer'
-    
+
     class BananaProducer:
         specialization_type = EcoProducer.model_specialization
         name = 'Ecological Producer'
@@ -122,11 +122,10 @@ class EcoProducerData(DataSet):
 
 
 class ShopData(DataSet):
-    
+
     class Meta:
         django_model = 'producers.Shop'
-    
+
     class EcoMart:
         name = 'EcoMart'
         producer = EcoProducerData.BananaProducer
-    

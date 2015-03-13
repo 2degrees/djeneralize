@@ -26,9 +26,9 @@ class SpecializedForeignKey(models.ForeignKey):
     """
     Foreign key field that return the most specialized model instance of the
     related object.
-    
+
     """
-    
+
     def contribute_to_class(self, cls, name):
         super(SpecializedForeignKey, self).contribute_to_class(cls, name)
         descriptor = SpecializedReverseSingleRelatedObjectDescriptor(self)
@@ -43,13 +43,13 @@ class SpecializedReverseSingleRelatedObjectDescriptor(
     """
     Make the specialized related-object manager available as attribute on a
     model class.
-    
+
     """
-    
+
     def __get__(self, instance, instance_type=None):
         super_descriptor = \
             super(SpecializedReverseSingleRelatedObjectDescriptor, self)
-            
+
         related_object = super_descriptor.__get__(instance, instance_type)
         try:
             return related_object.get_as_specialization()

@@ -26,9 +26,9 @@ from tests.test_djeneralize.writing.models import WritingImplement
 
 
 class TestForeignKey(FixtureTestCase):
-    
+
     datasets = [EcoProducerData, BananaData, PenData, ShopData]
-    
+
     def test_specialized_foreign_key(self):
         """A SpecializedForeignKey field return the specialized counterpart"""
         eco = EcoProducer.objects.get(name=EcoProducerData.BananaProducer.name)

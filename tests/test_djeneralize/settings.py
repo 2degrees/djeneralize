@@ -20,16 +20,16 @@ def get_and_ensure_exists_path_to_db_file():
     """
     Horrible hack to ensure that we've always got a file where the SQLite DB
     lives for testing.
-    
+
     """
-    
+
     db_path = path.join(path.dirname(__file__), 'data.db')
-    
+
     if not path.exists(db_path):
         open(db_path, 'w').close()
-        
+
     return db_path
-    
+
 
 # Django settings for test_djeneralize project.
 
