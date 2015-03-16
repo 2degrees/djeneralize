@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# Copyright (c) 2011-2015, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
@@ -13,8 +13,10 @@
 #
 ##############################################################################
 
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages
+from setuptools import setup
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -45,11 +47,6 @@ setup(name="djeneralize",
       packages=find_packages(),
       py_modules=[],
       zip_safe=False,
-      tests_require=[
-        "coverage",
-        "fixture>=1.5",
-        "nose",
-        ],
       install_requires=[
         "Django >= 1.6, <1.7",
         ],

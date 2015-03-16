@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# Copyright (c) 2011-2015, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
@@ -14,24 +14,6 @@
 #
 ##############################################################################
 
-from os import path
-
-def get_and_ensure_exists_path_to_db_file():
-    """
-    Horrible hack to ensure that we've always got a file where the SQLite DB
-    lives for testing.
-
-    """
-
-    db_path = path.join(path.dirname(__file__), 'data.db')
-
-    if not path.exists(db_path):
-        open(db_path, 'w').close()
-
-    return db_path
-
-
-# Django settings for test_djeneralize project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -44,8 +26,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': get_and_ensure_exists_path_to_db_file(),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'djeneralize-tests',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
