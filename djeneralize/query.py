@@ -103,7 +103,7 @@ class SpecializedQuerySet(QuerySet):
             # doesn't make sense to copy any of the "where", "tables" or
             # "order_by" options as these have already been applied in the
             # parent queryset
-            sub_queryset.query.extra = self.query.extra
+            sub_queryset.query._extra = self.query._extra
 
             sub_instances = sub_queryset.in_bulk(ids)
 

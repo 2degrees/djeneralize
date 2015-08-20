@@ -48,7 +48,7 @@ setup(name="djeneralize",
       py_modules=[],
       zip_safe=False,
       install_requires=[
-        "Django >= 1.6, <1.7",
+        "Django >= 1.6, <1.8",
         ],
       extras_require={
         'nose': ["nose >= 0.11"],
