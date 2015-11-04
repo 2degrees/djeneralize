@@ -6,6 +6,7 @@ Version 1.3 Final (unreleased)
 ==============================
 
 - Added support for Django 1.7.
+- Marked Wheel distribution as universal.
 
 
 Version 1.3 Release Candidate 2
@@ -18,6 +19,7 @@ Version 1.3 Release Candidate 1
 ===============================
 
 (This release was a mistake)
+
 
 Version 1.2 Release Candidate 1
 ===============================
