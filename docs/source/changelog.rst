@@ -2,7 +2,7 @@
 Changelog for :mod:`djeneralize`
 ================================
 
-Version 1.3 Final (unreleased)
+Version 1.3 Final (2015-11-04)
 ==============================
 
 - Added support for Django 1.7.
