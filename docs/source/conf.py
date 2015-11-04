@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'djeneralize'
-copyright = u'2011,2013, 2degrees Limited'
+copyright = u'2011-2015, 2degrees Limited'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
