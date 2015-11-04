@@ -3,5 +3,5 @@ include README
 include VERSION
 include MANIFEST.in
 
-recursive-exclude tests/ *
-recursive-exclude docs/ *
+recursive-exclude tests *
+recursive-exclude docs *
