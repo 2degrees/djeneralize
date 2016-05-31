@@ -2,8 +2,10 @@
 Changelog for :mod:`djeneralize`
 ================================
 
-Version 1.4 Release Candidate 1 (unreleased)
+Version 1.4 Release Candidate 1 (2016-05-31)
 ============================================
+
+- Added support for Django 1.8.
 
 
 Version 1.3 Final (2015-11-04)
