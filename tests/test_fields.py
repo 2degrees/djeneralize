@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# Copyright (c) 2011-2016, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
@@ -12,14 +12,13 @@
 # INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import os
-# Ensure that Django knows where the project is:
-os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_djeneralize.settings'
-
 from fixture.django_testcase import FixtureTestCase
 from nose.tools import eq_
 
-from tests.fixtures import BananaData, EcoProducerData, PenData, ShopData
+from tests.fixtures import BananaData
+from tests.fixtures import EcoProducerData
+from tests.fixtures import PenData
+from tests.fixtures import ShopData
 from tests.test_djeneralize.fruit.models import Banana
 from tests.test_djeneralize.producers.models import EcoProducer
 from tests.test_djeneralize.writing.models import WritingImplement

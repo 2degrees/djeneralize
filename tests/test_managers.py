@@ -1,17 +1,30 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Copyright (c) 2011-2016, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# All Rights Reserved.
+#
+# This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
+# which is subject to the provisions of the BSD at
+# <http://dev.2degreesnetwork.com/p/2degrees-license.html>. A copy of the
+# license should accompany this distribution. THIS SOFTWARE IS PROVIDED "AS IS"
+# AND ANY AND ALL EXPRESS OR IMPLIED WARRANTIES ARE DISCLAIMED, INCLUDING, BUT
+# NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST
+# INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
 """Test suite to ensure that correct copying of managers"""
 
-import os
-# Ensure that Django knows where the project is:
-os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_djeneralize.settings'
-
 from django.db.models.manager import Manager
-from fixture.django_testcase import FixtureTestCase
-from nose.tools import (
-    eq_, ok_, assert_false, raises, assert_raises, assert_not_equal
-    )
+from nose.tools import eq_
+from nose.tools import ok_
 
 from djeneralize.manager import SpecializationManager
-from .test_djeneralize.fruit.models import *
+from tests.test_djeneralize.fruit.models import Apple
+from tests.test_djeneralize.fruit.models import Banana
+from tests.test_djeneralize.fruit.models import Fruit
+from tests.test_djeneralize.fruit.models import FruitManager
+from tests.test_djeneralize.fruit.models import SpecializedFruitManager
 
 
 class TestManager(object):

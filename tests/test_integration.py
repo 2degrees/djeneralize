@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# Copyright (c) 2011-2016, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
@@ -13,23 +13,23 @@
 # INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """Integration tests to confirm nothing Django-related is broken"""
 
-import os
-# Ensure that Django knows where the project is:
-os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_djeneralize.settings'
-
-from .fixtures import *
-from .test_djeneralize.writing.models import *
-from djeneralize.utils import *
-
-from django.db.models import Avg, F, Q
-from django.db.models.query import ValuesListQuerySet, ValuesQuerySet
+from django.db.models.aggregates import Avg
+from django.db.models.expressions import F
+from django.db.models.query import ValuesListQuerySet
+from django.db.models.query import ValuesQuerySet
+from django.db.models.query_utils import Q
 from fixture.django_testcase import FixtureTestCase
 from nose.tools import assert_not_equal
 from nose.tools import eq_
 from nose.tools import ok_
+
+from tests.fixtures import BallPointPenData
+from tests.fixtures import FountainPenData
+from tests.fixtures import PenData
+from tests.fixtures import PencilData
+from tests.test_djeneralize.writing.models import WritingImplement
 
 
 def compare_generalization_to_specialization(generalization, specialization):

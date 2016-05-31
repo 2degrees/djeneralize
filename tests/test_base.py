@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# Copyright (c) 2011-2016, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
@@ -13,21 +13,33 @@
 # INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 from itertools import chain
-import os
-# Ensure that Django knows where the project is:
-os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_djeneralize.settings'
 
-from django.http import Http404
+from django.http.response import Http404
 from fixture.django_testcase import FixtureTestCase
-from nose.tools import (
-    eq_, ok_, assert_false, raises, assert_raises, assert_not_equal
-    )
+from nose.tools import assert_false
+from nose.tools import assert_not_equal
+from nose.tools import assert_raises
+from nose.tools import eq_
+from nose.tools import ok_
+from nose.tools import raises
 
-from djeneralize.utils import *
-from .fixtures import *
-from .test_djeneralize.writing.models import *
+from djeneralize.utils import find_next_path_down
+from djeneralize.utils import get_specialization_or_404
+from tests.fixtures import BallPointPenData
+from tests.fixtures import FountainPenData
+from tests.fixtures import PenData
+from tests.fixtures import PencilData
+from tests.test_djeneralize.writing.models import BallPointPen
+from tests.test_djeneralize.writing.models import FountainPen
+from tests.test_djeneralize.writing.models import Pen
+from tests.test_djeneralize.writing.models import Pencil
+from tests.test_djeneralize.writing.models import WritingImplement
+from tests.test_djeneralize.writing.models import abstract_specialization_factory
+from tests.test_djeneralize.writing.models import base_generalization_with_specialization_factory
+from tests.test_djeneralize.writing.models import invalid_specialization_factory
+from tests.test_djeneralize.writing.models import no_meta_factory
+from tests.test_djeneralize.writing.models import no_specialization_factory
 
 
 class TestMetaclass(object):
