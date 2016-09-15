@@ -117,7 +117,7 @@ class TestSpecializedQuerySet(FixtureTestCase):
 
         eq_(len(all_objects), len(all_specializations))
 
-        for i in xrange(len(all_objects)):
+        for i in range(len(all_objects)):
             o = all_objects[i]
             s = all_specializations[i]
 
@@ -229,14 +229,12 @@ class TestSpecializedQuerySet(FixtureTestCase):
     def test_aggregate(self):
         """Aggregations work on both types of querysets in the same manner"""
 
-        normal_agg = WritingImplement.objects.aggregate(Avg('length'))
+        normal_aggregate = WritingImplement.objects.aggregate(Avg('length'))
 
-        specialized_agg = \
+        specialized_aggregate = \
             WritingImplement.specializations.aggregate(Avg('length'))
 
-        eq_(normal_agg[normal_agg.keys()[0]],
-            specialized_agg[specialized_agg.keys()[0]]
-            )
+        eq_(normal_aggregate, specialized_aggregate)
 
     def test_count(self):
         """Counts work over both types of querysets"""

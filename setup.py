@@ -50,6 +50,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "Django >= 1.6, <1.9dev",
+        "six >= 1.10",
     ],
     extras_require={
         'nose': ["nose >= 0.11"],

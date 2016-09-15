@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2011,2013, 2degrees Limited <2degrees-floss@googlegroups.com>.
+# Copyright (c) 2011-2016, 2degrees Limited <2degrees-floss@googlegroups.com>.
 # All Rights Reserved.
 #
 # This file is part of djeneralize <https://github.com/2degrees/djeneralize>,
@@ -18,12 +18,15 @@ import re
 from django.db.models.base import ModelBase, Model
 from django.db.models.fields import FieldDoesNotExist, TextField
 from django.dispatch import Signal
+from six import with_metaclass
 
 from djeneralize import PATH_SEPARATOR
 from djeneralize.manager import SpecializationManager
 from djeneralize.utils import find_next_path_down
 
+
 __all__ = ['BaseGeneralizationMeta', 'BaseGeneralizationModel']
+
 
 SPECIALIZATION_RE = re.compile(r'^\w+$')
 """Allowed characters in the specializations declaration in class Meta"""
@@ -50,10 +53,12 @@ class BaseGeneralizationMeta(ModelBase):
 
         # We must remove the specialization declarations from the Meta inner
         # class since ModelBase will raise a TypeError is it encounters these:
-        if meta:
-            specialization = meta.__dict__.pop('specialization', None)
-        else:
+        try:
+            specialization = getattr(meta, 'specialization')
+        except AttributeError:
             specialization = None
+        else:
+            delattr(meta, 'specialization')
 
         new_model = super_new(cls, name, bases, attrs)
 
@@ -171,11 +176,8 @@ class BaseGeneralizationMeta(ModelBase):
 
 # { Base abstract model:
 
-class BaseGeneralizationModel(Model):
+class BaseGeneralizationModel(with_metaclass(BaseGeneralizationMeta, Model)):
     """Base model from which all Generalized and Specialized models inherit"""
-
-
-    __metaclass__ = BaseGeneralizationMeta
 
     specialization_type = TextField(db_index=True)
     """Field to store the specialization"""

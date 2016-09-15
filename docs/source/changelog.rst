@@ -2,6 +2,11 @@
 Changelog for :mod:`djeneralize`
 ================================
 
+Version 1.4 Release Candidate 2 (2016-09-15)
+============================================
+
+- Added support for Python 3.
+
 Version 1.4 Release Candidate 1 (2016-05-31)
 ============================================
 
