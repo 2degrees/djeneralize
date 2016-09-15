@@ -18,7 +18,7 @@ from collections import defaultdict
 
 from django.db.models.query import QuerySet
 
-from djeneralize import PATH_SEPERATOR
+from djeneralize import PATH_SEPARATOR
 from djeneralize.utils import find_next_path_down
 
 __all__ = ['SpecializedQuerySet']
@@ -89,7 +89,7 @@ class SpecializedQuerySet(QuerySet):
                 # general model (self.model):
                 specialization = find_next_path_down(
                     self.model.model_specialization, specialization,
-                    PATH_SEPERATOR
+                    PATH_SEPARATOR
                     )
 
             sub_queryset = self.model._meta.specializations[
@@ -146,7 +146,7 @@ class SpecializedQuerySet(QuerySet):
             # Coerce the specialization to only be the direct child of the
             # general model (self.model):
             specialization = find_next_path_down(
-                self.model.model_specialization, specialization, PATH_SEPERATOR
+                self.model.model_specialization, specialization, PATH_SEPARATOR
                 )
 
         try:

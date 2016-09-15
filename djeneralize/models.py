@@ -19,7 +19,7 @@ from django.db.models.base import ModelBase, Model
 from django.db.models.fields import FieldDoesNotExist, TextField
 from django.dispatch import Signal
 
-from djeneralize import PATH_SEPERATOR
+from djeneralize import PATH_SEPARATOR
 from djeneralize.manager import SpecializationManager
 from djeneralize.utils import find_next_path_down
 
@@ -81,7 +81,7 @@ class BaseGeneralizationMeta(ModelBase):
             # Prepare the look-up mapping of specializations which the sub-
             # classes will update:
             new_model._meta.specializations = {}
-            new_model._meta.specialization = PATH_SEPERATOR
+            new_model._meta.specialization = PATH_SEPARATOR
 
             if specialization is not None:
                 # We need to ensure this is actually None and not just evaluates
@@ -108,7 +108,7 @@ class BaseGeneralizationMeta(ModelBase):
 
             path_specialization = '%s%s%s' % (
                 parent_class._meta.specialization, specialization,
-                PATH_SEPERATOR
+                PATH_SEPARATOR
                 )
 
             # Calculate the specialization as a path taking into account the
@@ -218,7 +218,7 @@ class BaseGeneralizationModel(Model):
             # We need to find the path which is only one-step down from the
             # current level of specialization.
             path = find_next_path_down(self.__class__.model_specialization,
-                                       path, PATH_SEPERATOR)
+                                       path, PATH_SEPARATOR)
 
         return self._meta.specializations[path].objects.get(pk=self.pk)
 
