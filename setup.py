@@ -20,7 +20,7 @@ from setuptools import setup
 
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, "README")).read()
+README = open(os.path.join(here, "README.md")).read()
 version = open(os.path.join(here, "VERSION")).readline().rstrip()
 
 setup(
@@ -29,7 +29,7 @@ setup(
     description="Generalizations of specialized models for Django",
     long_description=README,
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 7 - Inactive",
         "Environment :: Web Environment",
         "Framework :: Django",
         "Intended Audience :: Developers",
