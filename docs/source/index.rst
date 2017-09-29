@@ -2,6 +2,13 @@
 Welcome to djeneralize's documentation!
 =======================================
 
+
+.. important::
+
+   djeneralize is no longer supported. Please see the README.md file to
+   learn how to migrate to django-ploymorphic.
+
+
 Overview
 ========
 
