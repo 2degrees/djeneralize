@@ -49,7 +49,7 @@ setup(
     py_modules=[],
     zip_safe=False,
     install_requires=[
-        "Django >= 1.6, <1.9dev",
+        "Django >= 1.6, < 1.12",
         "six >= 1.10",
     ],
     extras_require={
